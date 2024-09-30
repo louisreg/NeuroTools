@@ -21,6 +21,8 @@ class ns5Files():
         self.file_path = file_path
         self.open_ns5(file_path)
         self.__analog_entitie_labels = self.get_analog_entitie_labels()
+        self.__file_info = self.get_file_info()
+
 
     def open_ns5(self,file_path: str):
         '''
@@ -99,12 +101,13 @@ class ns5Files():
         keys : list | None, optional
             keys to save. If none, all keys are saved.
         """
-        temp_p = "temp.pkl"
+        temp_p = "temp.pkl" #TODO: ADD THIS PACKAGE LOCATION
         if keys is None:
             args = temp_p
         else:
             args = list(keys)
             args.insert(0,temp_p)
+            args = ''.join(str(x).replace(' ','_')+ ' ' for x in args)
 
         self.__call_ns5_py2(cmd = "to_pickle", arg = args)
 

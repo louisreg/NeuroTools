@@ -44,22 +44,22 @@ def get_analog_data(nsfile, label):
             data = entity.get_analog_data()
     print(list(data))
 
-def unpack_arg(args):
-    cleaned = args
-    del cleaned[0], cleaned[1], cleaned[2]
-    return(cleaned)
-
-def to_pickle(nsfile,args):
+def to_pickle(nsfile,arg):
     df = pd.DataFrame()
-    if isIter(args):
-        output_file = args[0]
-        keys = args[1:-1]
-    else:
-        output_file = args
+
+    if (isinstance(arg, basestring)):
+        output_file = arg
         keys = None
+    else:
+        output_file = arg[0]
+        keys = arg
+        del keys[0]
+        keys = [str.replace(e,'_',' ') for e in keys]
+
     analog_entities = [e for e in nsfile.get_entities() if e.entity_type == 2] 
+    
     for entity in analog_entities:
-        label = entity.electrode_label
+        label = str(entity.electrode_label)
         if keys is not None:
             if label in keys:
                 df[label] = entity.get_analog_data()
@@ -69,7 +69,10 @@ def to_pickle(nsfile,args):
     with open(output_file, "wb") as f :
         cp.dump(df,f,cp.HIGHEST_PROTOCOL)
     """
-    df.to_pickle(output_file)
+    if (str.endswith(output_file,'.pkl')):
+        df.to_pickle(output_file)
+    else:
+        raise NameError("uncorrect file format")
     del df
 
 
@@ -86,15 +89,22 @@ def main():
             if (len(sys.argv))==4: 
                 arg = sys.argv[3] 
             else:
-                arg = unpack_arg(sys.argv)
+                arg = sys.argv[3:]
+                if (cmd in arg):
+                    list.remove(arg,cmd)
+                if (file_path in arg):
+                    list.remove(arg,file_path)
 
-        nsfile = pyns.NSFile(file_path)
+        nsfile =  pyns.NSFile(file_path)
+
         if arg is not None: 
             eval_d="(nsfile,arg)"
         else:
             eval_d="(nsfile)"
         if (len(cmd)):
             eval(cmd+eval_d)
+        del nsfile
+
 
         
 
