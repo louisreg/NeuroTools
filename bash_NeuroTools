@@ -1,0 +1,4 @@
+export PYTHONPATH="${PWD}:$PYTHONPATH"
+export PATH="$PWD/neurotools:$PATH"
+export NEUROTOOLSPATH="${PWD}/neurotools"
+
