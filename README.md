@@ -3,6 +3,7 @@ A collection of python modules for analysing neuro data
 
 
 ## Prerequisite
+- This package requires the following modules installed on you python3 env: `numpy`, `pandas`.
 
 - `Python2` MUST be also installed locally in `/bin/sh`. Download the installation file from the official Python [website](https://www.python.org/downloads/release/python-2718/).
 
@@ -10,3 +11,4 @@ A collection of python modules for analysing neuro data
 
 - `pyns` requires `numpy`, which can be installed with `pip2`: `pip2 install numpy`
 
+- Last, we need pandas installed with python2 for the `ns5`to `HDF5` file conversion: `pip2 install pandas`

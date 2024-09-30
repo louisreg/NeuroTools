@@ -4,6 +4,11 @@
 import pyns
 import sys
 from datetime import datetime, time
+import pandas as pd
+#import cPickle as cp
+
+def isIter(val):
+    return(hasattr(val, '__iter__')==True)
 
 def get_file_info(nsfile):
     file_info = nsfile.get_file_info()
@@ -31,16 +36,65 @@ def get_analog_labels(nsfile):
     entities_label = [e.electrode_label for e in analog_entities] 
     print(entities_label)
 
+def get_analog_data(nsfile, label):
+    analog_entities = [e for e in nsfile.get_entities() if e.entity_type == 2] 
+    data = []
+    for entity in analog_entities:
+        if label in entity.electrode_label:
+            data = entity.get_analog_data()
+    print(list(data))
+
+def unpack_arg(args):
+    cleaned = args
+    del cleaned[0], cleaned[1], cleaned[2]
+    return(cleaned)
+
+def to_pickle(nsfile,args):
+    df = pd.DataFrame()
+    if isIter(args):
+        output_file = args[0]
+        keys = args[1:-1]
+    else:
+        output_file = args
+        keys = None
+    analog_entities = [e for e in nsfile.get_entities() if e.entity_type == 2] 
+    for entity in analog_entities:
+        label = entity.electrode_label
+        if keys is not None:
+            if label in keys:
+                df[label] = entity.get_analog_data()
+        else:
+            df[label] = entity.get_analog_data()
+    """
+    with open(output_file, "wb") as f :
+        cp.dump(df,f,cp.HIGHEST_PROTOCOL)
+    """
+    df.to_pickle(output_file)
+    del df
+
+
 def main():
     if (len(sys.argv))>1:
         file_path = str(sys.argv[1])
-        if (len(sys.argv))>2:
+        arg = None
+        if (len(sys.argv))==3:
             cmd = sys.argv[2] 
         else:
             cmd = ''
+        if (len(sys.argv))>3:
+            cmd = sys.argv[2] 
+            if (len(sys.argv))==4: 
+                arg = sys.argv[3] 
+            else:
+                arg = unpack_arg(sys.argv)
+
         nsfile = pyns.NSFile(file_path)
+        if arg is not None: 
+            eval_d="(nsfile,arg)"
+        else:
+            eval_d="(nsfile)"
         if (len(cmd)):
-            eval(cmd+"(nsfile)")
+            eval(cmd+eval_d)
 
         
 
