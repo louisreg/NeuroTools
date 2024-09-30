@@ -374,3 +374,5 @@ ENV/
 /site
 
 # End of https://www.gitignore.io/api/macos,linux,django,python,pycharm
+neurotools/ns5_tools/pyns
+tests/output/test.hdf5
