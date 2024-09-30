@@ -8,18 +8,32 @@ class ns5_py2_Exception(Exception):
         super().__init__(message)
 
 
-def stdout_2_dict(stdout: str) -> dict:
+def __stdout_2_dict(stdout: str) -> dict:
     '''
     Convert a litteral dict to a dict
     '''
     out = stdout.replace("\'", "\"")
     return(json_load(out))
 
-def stdout_2_list(stdout: str) -> list:
+def __stdout_2_list(stdout: str) -> list:
     '''
     Convert a litteral list to a list
     '''
     return(literal_eval(stdout))
+
+def get_file_info(filepath: str) -> dict:
+    '''
+    Return file info in a dict object
+    '''
+    stdout = call_ns5_py2(filepath,"get_file_info")
+    return(__stdout_2_dict(stdout))
+
+def get_analog_label_entities(filepath: str) -> list:
+    '''
+    Return file analog label entities in a list
+    '''
+    stdout = call_ns5_py2(filepath,"get_analog_labels")
+    return(__stdout_2_list(stdout))
 
 def call_ns5_py2(path, cmd='') -> str:
     '''
@@ -34,3 +48,8 @@ def call_ns5_py2(path, cmd='') -> str:
 
     return(stdout.decode())
 
+def get_analog_entitie(path:str, label:str) -> list: 
+    """
+    return list of values of an analog entitie
+    """
+    

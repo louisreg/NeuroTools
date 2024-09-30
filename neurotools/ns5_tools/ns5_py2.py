@@ -13,8 +13,14 @@ def get_file_info(nsfile):
     info['timestamp_resolution'] = file_info.timestamp_resolution
     info['time_span'] = file_info.time_span
     info['app_name'] = file_info.app_name
-    dt = datetime(file_info.time_year, file_info.time_day, file_info.time_month)
-    tm = time(file_info.time_hour, file_info.time_min,file_info.time_sec,file_info.time_millisec)
+    if (file_info.time_day and file_info.time_month and file_info.time_year):
+        dt = datetime(file_info.time_year, file_info.time_day, file_info.time_month)
+    else:
+        dt = datetime(2000,1,1)    
+    if (file_info.time_hour and file_info.time_min and file_info.time_sec and file_info.time_millisec):
+        tm = time(file_info.time_hour, file_info.time_min,file_info.time_sec,file_info.time_millisec)
+    else:
+        tm = time(0,0,0,0)
     info['date'] = dt.strftime("%Y/%d/%m")
     info['time'] = tm.strftime("%H:%M:%S")
     info['comment'] = file_info.comment
