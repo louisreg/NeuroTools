@@ -22,8 +22,9 @@ bad_test_file_entities = ['raw 100', 'raw 2', 'raw 3', 'raw 4', 'raw 5', 'raw 6'
 sub_list_entities = ['raw 1', 'raw 2', 'raw 3', 'raw 4', 'raw 5', 'raw 6', 'raw 7', 'raw 8', 'Fz ']
 save_path = "./output/"
 save_file = save_path + "test.hdf5"
+test_sampling_rate = 30_000.0
+test_n_samples = 360840
 class TestOpenning(unittest.TestCase):
-
     def test_open_OK(self):
         ns5file = ns5_tools.ns5Files(test_file)
 
@@ -34,6 +35,7 @@ class TestOpenning(unittest.TestCase):
     def test_open_wrong_extension_NOK(self):
         with self.assertRaises(ns5_tools.InvalidFileExtension): 
             ns5_tools.ns5Files('no_file')
+
 class Test_getInfo_Labels(unittest.TestCase):
     def test_get_file_info_OK(self):
         ns5file = ns5_tools.ns5Files(test_file)
@@ -50,6 +52,18 @@ class Test_getInfo_Labels(unittest.TestCase):
     def test_get_analog_label_entities_NOK(self):
         ns5file = ns5_tools.ns5Files(test_file)
         self.assertNotEqual(ns5file.get_analog_entitie_labels(), bad_test_file_entities)
+    
+    def test_get_sampling_rate(self):
+        ns5file = ns5_tools.ns5Files(test_file)
+        self.assertEqual(ns5file.get_sampling_rate(), test_sampling_rate)
+
+    def test_get_sampling_rate(self):
+        ns5file = ns5_tools.ns5Files(test_file)
+        self.assertEqual(ns5file.get_n_samples(), test_n_samples)
+
+    def test_get_time_vector(self):
+        ns5file = ns5_tools.ns5Files(test_file)
+        ns5file.get_time_vector()
 
 class Test_getAnalogData(unittest.TestCase):
     def test_get_analog_data_OK(self):
@@ -61,24 +75,26 @@ class Test_getAnalogData(unittest.TestCase):
         ns5file = ns5_tools.ns5Files(test_file)
         with self.assertRaises(ns5_tools.UnknownAnalogLabelException): 
             ns5file.get_analog_entitie('nope')
-
+          
 class Test_to_hdf(unittest.TestCase):
-    
-
     def test_all_labels(self):
         ns5file = ns5_tools.ns5Files(test_file)
         ns5file.to_hdf(save_file)
         df = pd.read_hdf(save_file)
-        self.assertEqual(list(df.keys()),ns5file.get_analog_entitie_labels())
+        list_t = ns5file.get_analog_entitie_labels()
+        list_t.append("time")
+        self.assertEqual(list(df.keys()),list_t)
     
-
     def test_sublist_labels(self):
         ns5file = ns5_tools.ns5Files(test_file)
         ns5file.to_hdf(save_file,sub_list_entities)
         df = pd.read_hdf(save_file)
-        self.assertNotEqual(list(df.keys()),ns5file.get_analog_entitie_labels())
+        list_t = ns5file.get_analog_entitie_labels()
+        list_t.append("time")
+        sub_list_entities.append("time")
+        self.assertNotEqual(list(df.keys()),list_t)
         self.assertEqual(list(df.keys()),sub_list_entities)
-    
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -5,7 +5,7 @@ import pyns
 import sys
 from datetime import datetime, time
 import pandas as pd
-#import cPickle as cp
+import numpy as np
 
 def isIter(val):
     return(hasattr(val, '__iter__')==True)
@@ -44,6 +44,15 @@ def get_analog_data(nsfile, label):
             data = entity.get_analog_data()
     print(list(data))
 
+def get_sampling_rate(nsfile):
+    analog_entities = [e for e in nsfile.get_entities() if e.entity_type == 2] 
+    print(analog_entities[0].get_analog_info().sample_rate)
+
+def get_n_samples(nsfile):
+    analog_entities = [e for e in nsfile.get_entities() if e.entity_type == 2] 
+    print(len(analog_entities[0].get_analog_data()))
+
+
 def to_pickle(nsfile,arg):
     df = pd.DataFrame()
 
@@ -57,6 +66,8 @@ def to_pickle(nsfile,arg):
         keys = [str.replace(e,'_',' ') for e in keys]
 
     analog_entities = [e for e in nsfile.get_entities() if e.entity_type == 2] 
+
+
     
     for entity in analog_entities:
         label = str(entity.electrode_label)

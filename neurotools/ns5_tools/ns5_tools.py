@@ -3,6 +3,9 @@ from ast import literal_eval
 from subprocess import Popen, PIPE
 import os
 import pandas as pd
+from pathlib import Path
+import numpy as np
+from numpy.typing import NDArray
 
 class ns5_py2_Exception(Exception):
     def __init__(self, message):            
@@ -22,7 +25,12 @@ class ns5Files():
         self.open_ns5(file_path)
         self.__analog_entitie_labels = self.get_analog_entitie_labels()
         self.__file_info = self.get_file_info()
-
+        self.__sampling_rate = None
+        self.__time = None
+        self.__n_samples = None
+        self.get_sampling_rate()
+        self.get_time_vector()
+        self.get_n_samples()
 
     def open_ns5(self,file_path: str):
         '''
@@ -89,6 +97,44 @@ class ns5Files():
             raise UnknownAnalogLabelException
         return(self.__stdout_2_list(self.__call_ns5_py2("get_analog_data",label)))
     
+    def get_sampling_rate(self) -> float:
+        """return data sampling rate
+
+        Returns
+        -------
+        float
+            sampling rate in Hz
+        """
+        if self.__sampling_rate is None:
+            sampling_rate = self.__stdout_2_list(self.__call_ns5_py2("get_sampling_rate"))
+            self.__sampling_rate = float(sampling_rate)
+        return(self.__sampling_rate)
+    
+    def get_n_samples(self) -> int:
+        """Return data number of samples
+
+        Returns
+        -------
+        int
+            Number of samples
+        """
+        if self.__n_samples is None:
+            n_samples = self.__stdout_2_list(self.__call_ns5_py2("get_n_samples"))
+            self.__n_samples = int(n_samples)
+        return(self.__n_samples)
+
+    def get_time_vector(self) -> NDArray:
+        """Return the time vector np.array
+
+        Returns
+        -------
+        np.array
+            time vector array
+        """
+        if self.__time is None: 
+            sampling_rate = self.get_sampling_rate()
+            self.__time = np.arange(0, self.get_n_samples(),dtype = np.float32)/sampling_rate
+        return(self.__time)
 
     def to_hdf(self,output_file:str, keys:list|None=None) -> None:
         """
@@ -101,7 +147,8 @@ class ns5Files():
         keys : list | None, optional
             keys to save. If none, all keys are saved.
         """
-        temp_p = "temp.pkl" #TODO: ADD THIS PACKAGE LOCATION
+        thisfile_path = str(Path(os.path.dirname(__file__))) 
+        temp_p = thisfile_path + "/temp.pkl" 
         if keys is None:
             args = temp_p
         else:
@@ -113,4 +160,5 @@ class ns5Files():
 
         df = pd.read_pickle(temp_p)
         os.remove(temp_p)
+        df['time'] = self.get_time_vector()
         df.to_hdf(output_file, key='df', mode='w')
