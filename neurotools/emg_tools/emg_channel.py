@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from ..utils import trigger, filters
 from .muap import eCMAP
 
+
 class eEMG():
     def __init__(self,data:NDArray,t:NDArray):
         self.__raw = np.array(data)
@@ -48,6 +49,16 @@ class eEMG():
     @property
     def eCMAPS(self):
         return(self.__eCMAPS)
+
+    @property
+    def avg_eCMAP(self) -> NDArray:
+        if self.__avg_eCMAPS is None:
+            self.average_eCMAPS()
+        return(self.__avg_eCMAPS)
+
+    @property
+    def rms(self):
+        return(np.sqrt(np.mean(self.__data**2)))
     
 
     def HPF(self,cutoff:float, order:int=5) -> NDArray:
@@ -132,13 +143,13 @@ class eEMG():
         self.__t_eCMAPS = eCMAP(data,time).t
         return(self.__eCMAPS,self.__t_eCMAPS)
     
-    def average_eCMAPS(self) -> NDArray:
+    def average_eCMAPS(self) -> eCMAP:
         data = np.array([])
         self.__avg_eCMAPS = data
         if len(self.__eCMAPS):
             arg = [a.data for a in self.__eCMAPS]
             data = np.vstack(arg)
-            self.__avg_eCMAPS = np.mean(data,axis = 0)
+            self.__avg_eCMAPS = eCMAP(np.mean(data,axis = 0), self.__t_eCMAPS)
         return(self.__avg_eCMAPS)
 
 
@@ -164,4 +175,4 @@ class eEMG():
             ax.set_xlabel("Time (s)")
             ax.set_ylabel("EMG (µV)")
             ax.set_xlim(np.min(self.__t_eCMAPS),np.max(self.__t_eCMAPS))
-            ax.plot(self.__t_eCMAPS,self.average_eCMAPS(), **kwargs)
+            ax.plot(self.__t_eCMAPS,self.avg_eCMAP.data, **kwargs)
