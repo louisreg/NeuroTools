@@ -3,7 +3,7 @@ A collection of python modules for analysing neuro data
 
 
 ## Prerequisite
-- This package requires the following modules installed on you python3 env: `numpy`, `pandas`.
+- This package requires the following modules installed on you python3 env: `numpy`, `pandas`, `tqdm` and `imageio`.
 
 - `Python2` MUST be also installed locally in `/bin/sh`. Download the installation file from the official Python [website](https://www.python.org/downloads/release/python-2718/).
 

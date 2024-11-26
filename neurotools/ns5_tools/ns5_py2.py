@@ -19,7 +19,7 @@ def get_file_info(nsfile):
     info['time_span'] = file_info.time_span
     info['app_name'] = file_info.app_name
     if (file_info.time_day and file_info.time_month and file_info.time_year):
-        dt = datetime(file_info.time_year, file_info.time_day, file_info.time_month)
+        dt = datetime(file_info.time_year, file_info.time_month, file_info.time_day)
     else:
         dt = datetime(2000,1,1)    
     if (file_info.time_hour and file_info.time_min and file_info.time_sec and file_info.time_millisec):
@@ -105,7 +105,9 @@ def main():
                     list.remove(arg,cmd)
                 if (file_path in arg):
                     list.remove(arg,file_path)
-
+        file_path = file_path.replace('*',' ')
+        #print(file_path)
+        #exit()
         nsfile =  pyns.NSFile(file_path)
 
         if arg is not None: 

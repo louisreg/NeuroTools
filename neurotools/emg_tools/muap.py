@@ -11,6 +11,7 @@ class eCMAP():
         self.__t = np.array(t)
         self.__n_samples = len(data)
         self.__fs = 1/(t[1]-t[0])
+        self.__shift()
 
     @property
     def t(self) -> NDArray:
@@ -41,12 +42,20 @@ class eCMAP():
         return(np.max(self.__data))
 
     @property
+    def peak(self) -> float:
+        return(np.max(np.abs(self.__data)))
+
+    @property
     def min_idx(self) -> int:
         return(np.where(self.__data==self.min)[0][0])
     
     @property
     def max_idx(self) -> int:
         return(np.where(self.__data==self.max)[0][0])
+    
+    @property
+    def peak_idx(self) -> int:
+        return(np.where(self.__data==self.peak)[0][0])
     
     @property
     def peak2peak(self) -> float:
@@ -63,6 +72,10 @@ class eCMAP():
     @property
     def ttmin(self)-> float:   #time to min
         return(self.__t[self.min_idx])
+    
+    @property
+    def ttpeak(self)-> float:   #time to peak
+        return(self.__t[self.peak_idx])
 
     def __tmin_tmax_10(self, max: bool)-> int:
         idxs = np.where(self.__rectify()>0.1*self.max)[0]
@@ -97,6 +110,16 @@ class eCMAP():
 
     def __rectify(self)-> NDArray:
         return(np.sqrt(self.__data**2))
+
+    def __shift(self) -> None:
+        y0 = self.__data[0]
+        y1 = self.__data[-1]
+        x0 = self.t[0]
+        x1 = self.t[-1]
+        a = (y1-y0)/(x1-x0)
+        b = y0 - a*x0
+        self.__data = self.__data-((a*self.t)+b)
+
 
 
     def HPF(self,cutoff:float, order:int=5) -> NDArray:

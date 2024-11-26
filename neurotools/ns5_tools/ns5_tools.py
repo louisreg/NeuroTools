@@ -6,6 +6,7 @@ import pandas as pd
 from pathlib import Path
 import numpy as np
 from numpy.typing import NDArray
+from datetime import datetime, timedelta
 
 class ns5_py2_Exception(Exception):
     def __init__(self, message):            
@@ -23,15 +24,20 @@ class ns5Files():
     def __init__(self,file_path: str):
         self.file_path = file_path
         self.open_ns5(file_path)
-        self.__analog_entitie_labels = self.get_analog_entitie_labels()
-        self.__file_info = self.get_file_info()
+        
+        self.__file_info = self.__get_file_info()
         self.__sampling_rate = None
         self.__time = None
         self.__n_samples = None
-        self.get_sampling_rate()
-        self.get_time_vector()
-        self.get_n_samples()
 
+
+    @property
+    def datetime(self):
+        datetime_str = self.__file_info["date"] + " "+self.__file_info["time"]
+        ripple_datetime = datetime.strptime(datetime_str,'%Y/%d/%m %H:%M:%S')
+        return(ripple_datetime - timedelta(hours=5))
+    
+    
     def open_ns5(self,file_path: str):
         '''
         Validate if file exist and if it is openable
@@ -40,8 +46,7 @@ class ns5Files():
             raise(InvalidFileExtension)
         if not os.path.isfile(file_path):
             raise(InvalidFile)
-        self.file_path = file_path
-        self.__call_ns5_py2() #dummy read
+        #self.__call_ns5_py2() #dummy read
 
     def __stdout_2_dict(self,stdout: str) -> dict:
         '''
@@ -56,7 +61,7 @@ class ns5Files():
         '''
         return(literal_eval(stdout))
 
-    def get_file_info(self) -> dict:
+    def __get_file_info(self) -> dict:
         '''
         Return file info in a dict object
         '''
@@ -74,11 +79,13 @@ class ns5Files():
         '''
         call the ns5_py2.py script with a specified file path and cmd
         '''
+
+        file_path = self.file_path.replace(" ", "*")
         py2_file = os.path.dirname(__file__)+'/ns5_py2.py'
         if arg is None:
-            py2_cmd = f"python2  {py2_file} {self.file_path} {cmd}"
+            py2_cmd = f"python2  {py2_file} {file_path} {cmd}"
         else:
-            py2_cmd = f"python2  {py2_file} {self.file_path} {cmd} {arg}"
+            py2_cmd = f"python2  {py2_file} {file_path} {cmd} {arg}"
         process = Popen([py2_cmd], stdout=PIPE, stderr=PIPE, shell=True, stdin=None)
         stdout, stderr = process.communicate()
         if (process.returncode):
@@ -93,6 +100,7 @@ class ns5Files():
 
         Warning: THIS IS SLOW!
         """
+        self.__analog_entitie_labels = self.get_analog_entitie_labels()
         if label not in self.__analog_entitie_labels:
             raise UnknownAnalogLabelException
         return(self.__stdout_2_list(self.__call_ns5_py2("get_analog_data",label)))
@@ -156,6 +164,8 @@ class ns5Files():
             args.insert(0,temp_p)
             args = ''.join(str(x).replace(' ','_')+ ' ' for x in args)
 
+        self.get_sampling_rate()
+        self.get_n_samples()
         self.__call_ns5_py2(cmd = "to_pickle", arg = args)
 
         df = pd.read_pickle(temp_p)

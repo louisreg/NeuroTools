@@ -1,0 +1,21 @@
+APP,Stim_and_Rest_ContinuousRamp_APP
+Date,Jun-07-2022
+Start Time,19:30:58
+Elapsed Time (s),45.564
+StimChannel,1110
+InvertedChannel,0000
+Waveform,Sine
+Frequency (Hz),10000.0
+Ramp length (ms),10.0
+Stimulation Duration (s),2.0
+Rest Duration (s),1.0
+Max Stimulation Amplitude (uA),500.0
+Min Stimulation Amplitude (uA),400.0
+Stimulation Amplitude Step (uA),10.0
+Randomized Amplitudes,0
+Search Completed,1
+Period (us),20
+Phase (deg),0.0
+Comments,
+Amp (uA),400.0,410.0,420.0,430.0,440.0,450.0,460.0,470.0,480.0,490.0,500.0
+Elapsed Time (s),3.059,3.106,3.085,3.091,3.07,3.058,3.098,3.095,3.086,3.079,3.122

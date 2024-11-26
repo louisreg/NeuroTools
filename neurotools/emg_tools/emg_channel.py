@@ -6,6 +6,7 @@ from ..utils import trigger, filters
 from .muap import eCMAP
 
 
+
 class eEMG():
     def __init__(self,data:NDArray,t:NDArray):
         self.__raw = np.array(data)
@@ -59,7 +60,6 @@ class eEMG():
     @property
     def rms(self):
         return(np.sqrt(np.mean(self.__data**2)))
-    
 
     def HPF(self,cutoff:float, order:int=5) -> NDArray:
         """Filter raw data with a butterworth high-pass filter
@@ -121,7 +121,6 @@ class eEMG():
             Time vector of an eCMAP
         """
 
-
         if self.__trigger is None:
             raise("No trigger was attached to this EMG channel")
         
@@ -152,7 +151,6 @@ class eEMG():
             self.__avg_eCMAPS = eCMAP(np.mean(data,axis = 0), self.__t_eCMAPS)
         return(self.__avg_eCMAPS)
 
-
     def plot_raw(self, ax: plt.Axes, **kwargs):
         ax.set_xlabel("Time (s)")
         ax.set_ylabel("EMG (µV)")
@@ -171,8 +169,10 @@ class eEMG():
                 eCMAPS.plot(ax, **kwargs)
 
     def plot_avg_eCMAP(self, ax: plt.Axes, **kwargs):
-        if self.__eCMAPS is not None:
+        if len(self.__eCMAPS):
             ax.set_xlabel("Time (s)")
             ax.set_ylabel("EMG (µV)")
             ax.set_xlim(np.min(self.__t_eCMAPS),np.max(self.__t_eCMAPS))
+            if self.avg_eCMAP is None :
+                self.average_eCMAPS()
             ax.plot(self.__t_eCMAPS,self.avg_eCMAP.data, **kwargs)

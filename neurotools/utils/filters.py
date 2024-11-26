@@ -22,3 +22,6 @@ def butter_LPF(data, cutoff, fs, order=5):
     b, a = butter_LP(cutoff, fs, order=order)
     y = signal.filtfilt(b, a, data)
     return y
+
+
+

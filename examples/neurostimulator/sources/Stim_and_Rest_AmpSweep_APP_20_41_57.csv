@@ -1,0 +1,19 @@
+APP,Stim_and_Rest_AmpSweep_APP
+Date,Apr-21-2022
+Start Time,20:41:57
+Elapsed Time (s),445.119
+StimChannel,1100
+InvertedChannel,1000
+PatternFrequency (Hz),10.0
+Stimulation Duration (s),5.0
+Rest Duration (s),25.0
+Max Stimulation Amplitude (uA),66.0
+Min Stimulation Amplitude (uA),40.0
+Stimulation Amplitude Step (uA),2.0
+Randomized Amplitudes,0
+Search Completed,1
+Waveform,Sym Biphasic Square
+Pulse Width (us),40.0
+Comments,gm1gm2 datafile 1-14
+Amp (uA),40.0,42.0,44.0,46.0,48.0,50.0,52.0,54.0,56.0,58.0,60.0,62.0,64.0,66.0
+Elapsed Time (s),5.502,6.23,6.323,6.31,6.289,6.229,6.263,6.253,6.237,6.251,6.29,6.257,6.249,6.307
