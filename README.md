@@ -1,5 +1,5 @@
 # NeuroTools
-A collection of python modules for analysing neuro data
+A collection of python modules for analysing EMG data
 
 
 ## Prerequisite
